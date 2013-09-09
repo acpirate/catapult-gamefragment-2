@@ -20,6 +20,8 @@ public class GUICode : MonoBehaviour {
 	//power meter
 	int powerMeterLength=100;
 	int PowerMeterWidth=20;
+	//engine selection
+	int engineSelectNumber=0;
 			
 	public Texture2D settingsTexture;
 	public Texture2D resetTexture;
@@ -64,14 +66,7 @@ public class GUICode : MonoBehaviour {
 				}
 			break;
 			
-		}
-		//cursor hide and show
-		if (Input.GetKey(KeyCode.LeftControl) || (MainGameCode.gamestate!=GAMESTATE.PLAY && MainGameCode.gamestate!=GAMESTATE.AIM)) {
-			Screen.showCursor=true;	
-		}
-		else  {
-			Screen.showCursor=false;	
-		}		
+		}	
 		
 	}		
 	
@@ -97,8 +92,36 @@ public class GUICode : MonoBehaviour {
 				AimInstructions();
 				DisplayTargetIndicator();
 				DrawPowerMeter();
+				DrawEngineSelect();
 			break;			
 		}	
+	}	
+	
+	
+	void DrawEngineSelect() {
+		GUIContent[] selectionContent=new GUIContent[3];
+		selectionContent[0]=new GUIContent("ballista");
+		selectionContent[1]=new GUIContent("catapult");
+		selectionContent[2]=new GUIContent("trebuchet");
+		
+		
+		Rect engineSelectPosition=new Rect(10,20,100,100);
+		
+		
+		engineSelectNumber=GUI.SelectionGrid(engineSelectPosition,engineSelectNumber,selectionContent,1);
+		switch (engineSelectNumber) {
+			case 0:
+				MainGameCode.SetEngine(ENGINE.BALLISTA);
+			break;
+			case 1:
+				MainGameCode.SetEngine(ENGINE.CATAPULT);
+			break;
+			case 2:
+				MainGameCode.SetEngine(ENGINE.TREBUCHET);
+			break;
+		}	
+		
+		
 	}	
 	
 	void DrawPowerMeter() {
@@ -157,7 +180,7 @@ public class GUICode : MonoBehaviour {
 	
 	void PlayInstructions() {
 		Rect instructionPosition=new Rect(0,Screen.height*.9f,Screen.width,Screen.height*.10f);
-		ShadowAndOutline.DrawOutline(instructionPosition,"left ctrl to show mouse pointer, enter to aim puck\n wasd moves view, mouse looks",instructionStyle,Color.black,Color.white,2f);
+		ShadowAndOutline.DrawOutline(instructionPosition,"left ctrl+mouse to look, enter to aim puck\n wasd moves view",instructionStyle,Color.black,Color.white,2f);
 	}	
 	
 	void AimInstructions() {

@@ -3,6 +3,7 @@ using System.Collections;
 
 public enum GAMESTATE { TITLE, PLAY, GAMEOVER, SETTINGS, AIM };
 public enum DIRECTION { LEFT, RIGHT, NONE, UP, DOWN};
+public enum ENGINE { BALLISTA, CATAPULT, TREBUCHET};
 
 public class MainGameCode : MonoBehaviour {
 	
@@ -15,15 +16,15 @@ public class MainGameCode : MonoBehaviour {
 	
 	public GameObject brickPrefab;
 	static GameObject staticBrickPrefab;
-	static int wallWidth=10;
-	static int wallHeight=5;
+	static int wallWidth=12;
+	static int wallHeight=10;
 	static float brickWidth=20f;
 	static float brickHeight=10f;
 	static float brickHeightOffset=5.47986f;
-	static float wallXStart=-100;
-	static float wallZStart=200;
+	static float wallXStart=-300;
+	static float wallZStart=950;
 	
-	
+	static ENGINE engine = ENGINE.BALLISTA;
 	
 	
 	static float powerChargeRate=50;
@@ -56,8 +57,12 @@ public class MainGameCode : MonoBehaviour {
 		//look at the puck while its flying
 		if (puck.rigidbody.velocity.magnitude>0) mainCamera.transform.LookAt(puck.transform.position);
 		//reset the puck if it falls off
-		if (puck.transform.position.y<0) ResetPuck();
+		if (puck.transform.position.y<-100) ResetPuck();
 	}
+	//static methods
+	public static void SetEngine(ENGINE inEngine) {
+		engine=inEngine;
+	}	
 	
 	static void BuildWall() {
 		for (int yCounter=0;yCounter<wallHeight;yCounter++) {
@@ -71,7 +76,7 @@ public class MainGameCode : MonoBehaviour {
 	}	
 	
 	
-	//static methods
+	
 	
 	public static void ShootPuck() {
 		EndAim();
@@ -126,15 +131,15 @@ public class MainGameCode : MonoBehaviour {
 	public static void ResetKingPedestal() {
 		
 		GameObject tempObject=null;
-		tempObject=(GameObject) Instantiate(staticBrickPrefab,new Vector3(0,6f,245),Quaternion.identity);	
+		tempObject=(GameObject) Instantiate(staticBrickPrefab,new Vector3(-150,6f,1000),Quaternion.identity);	
 		tempObject.rigidbody.velocity=new Vector3(0,0,0);
-		tempObject=(GameObject) Instantiate(staticBrickPrefab,new Vector3(0,17f,245),Quaternion.identity);
+		tempObject=(GameObject) Instantiate(staticBrickPrefab,new Vector3(-150,17f,1000),Quaternion.identity);
 		tempObject.rigidbody.velocity=new Vector3(0,0,0);
 	}	
 	
 	public static void ResetKing() {
 		king.rigidbody.velocity=new Vector3(0,0,0);
-		king.transform.position=new Vector3(0,27f,245);
+		king.transform.position=new Vector3(-150,27f,1000);
 		king.transform.eulerAngles=new Vector3(0,0,0);
 		king.rigidbody.velocity=new Vector3(0,0,0);
 		king.GetComponent<KingCode>().Stabilize();

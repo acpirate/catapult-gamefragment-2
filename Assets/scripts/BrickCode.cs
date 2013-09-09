@@ -10,7 +10,7 @@ public class BrickCode : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (transform.position.y<0) Destroy(gameObject);
+		if (transform.position.y<-300) Destroy(gameObject);
 		
 	
 	}

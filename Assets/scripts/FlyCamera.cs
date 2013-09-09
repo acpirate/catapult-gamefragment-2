@@ -29,7 +29,7 @@
 		}
 	
         void Update () {		
-			if (MainGameCode.gamestate==GAMESTATE.PLAY && !(Input.GetKey(KeyCode.LeftControl))) {
+			if (MainGameCode.gamestate==GAMESTATE.PLAY && (Input.GetKey(KeyCode.LeftControl))) {
 				MoveCamera();
 			}
 			//transform.LookAt(king.transform.position);
