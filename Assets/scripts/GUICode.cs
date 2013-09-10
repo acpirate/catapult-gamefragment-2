@@ -18,8 +18,9 @@ public class GUICode : MonoBehaviour {
 	//target indicator
 	int targetIndicatorSize=20;
 	//power meter
+	int powerMeterMax=100;
 	int powerMeterLength=100;
-	int PowerMeterWidth=20;
+	int powerMeterWidth=20;
 	//engine selection
 	int engineSelectNumber=0;
 			
@@ -128,13 +129,13 @@ public class GUICode : MonoBehaviour {
 		Rect powerTextPosition=new Rect(10,Screen.height*.9f,100,20);
 		ShadowAndOutline.DrawOutline(powerTextPosition,"Power",powerMeterTextStyle,Color.black,Color.white,2);
 		
-		Rect powerContainerPosition= new Rect(50,Screen.height*.9f-powerMeterLength-10,PowerMeterWidth,powerMeterLength);
+		Rect powerContainerPosition= new Rect(50,Screen.height*.9f-powerMeterLength-10,powerMeterWidth,powerMeterLength);
 		GUI.Box(powerContainerPosition,"");
 		
-		float powerMeterInteriorLength=powerMeterLength*MainGameCode.currentPower/MainGameCode.maxPower;
-		float powerMeterInteriorVeritcalPositionAdjustment=powerMeterLength-powerMeterLength*MainGameCode.currentPower/MainGameCode.maxPower;
+		float powerMeterInteriorLength=powerMeterLength*MainGameCode.currentPower/powerMeterMax;
+		float powerMeterInteriorVeritcalPositionAdjustment=powerMeterLength-powerMeterLength*MainGameCode.currentPower/powerMeterMax;
 		
-		Rect powerDisplay=new Rect(50,Screen.height*.9f-powerMeterLength+powerMeterInteriorVeritcalPositionAdjustment-10,PowerMeterWidth, powerMeterInteriorLength);
+		Rect powerDisplay=new Rect(50,Screen.height*.9f-powerMeterLength+powerMeterInteriorVeritcalPositionAdjustment-10,powerMeterWidth, powerMeterInteriorLength);
 		GUI.Box(powerDisplay,"",powerMeterInteriorStyle);
 		
 			

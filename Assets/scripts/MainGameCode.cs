@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
+	
 public enum GAMESTATE { TITLE, PLAY, GAMEOVER, SETTINGS, AIM };
 public enum DIRECTION { LEFT, RIGHT, NONE, UP, DOWN};
 public enum ENGINE { BALLISTA, CATAPULT, TREBUCHET};
 
 public class MainGameCode : MonoBehaviour {
+	
+	public static Dictionary<ENGINE,Engine> engines=new Dictionary<ENGINE,Engine>();
 	
 	public static GameObject king=null;
 	public static GameObject puck=null;
@@ -24,10 +27,13 @@ public class MainGameCode : MonoBehaviour {
 	static float wallXStart=-300;
 	static float wallZStart=950;
 	
-	static ENGINE engine = ENGINE.BALLISTA;
+	static ENGINE selectedEngine = ENGINE.BALLISTA;
 	
 	
 	static float powerChargeRate=50;
+	public static float maxBallistaPower=30;
+	public static float maxCatapultPower=60;
+	public static float maxTrebuchetPower=100;
 	public static float maxPower=100;
 	public static float currentPower=0;
 	public static float powerMultiplier=100f;
@@ -37,6 +43,8 @@ public class MainGameCode : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake() {
+		
+		if (engines.Count==0) InitializeEngines();
 		if (king==null) king=GameObject.Find("King");
 		if (puck==null) puck=GameObject.Find("Puck");
 		if (aimCamera==null) aimCamera=GameObject.Find("AimCamera");
@@ -58,13 +66,22 @@ public class MainGameCode : MonoBehaviour {
 		if (puck.rigidbody.velocity.magnitude>0) mainCamera.transform.LookAt(puck.transform.position);
 		//turn off main camera if the puck is moving
 		if (puck.GetComponent<PuckCode>().puckMoving) {mainCamera.enabled=false; } 
-		if (!puck.GetComponent<PuckCode>().puckMoving && gamestate!=GAMESTATE.AIM) mainCamera.enabled=true;
+		if (!puck.GetComponent<PuckCode>().puckMoving && gamestate!=GAMESTATE.AIM) { 
+			mainCamera.enabled=true;
+			mainCamera.transform.position=puck.GetComponent<PuckCode>().moveCamera.transform.position;
+		}		
 		//reset the puck if it falls off
 		if (puck.transform.position.y<-100) ResetPuck();
 	}
 	//static methods
 	public static void SetEngine(ENGINE inEngine) {
-		engine=inEngine;
+		selectedEngine=inEngine;
+	}	
+	
+	static void InitializeEngines() {
+		engines[ENGINE.TREBUCHET]=new Engine(ENGINE.TREBUCHET,100,new List<int>() {40});
+		engines[ENGINE.BALLISTA]=new Engine(ENGINE.BALLISTA,30,new List<int>() {1,15,30});
+		engines[ENGINE.CATAPULT]=new Engine(ENGINE.CATAPULT,60,new List<int>() {45,60,75});
 	}	
 	
 	static void BuildWall() {
@@ -82,9 +99,15 @@ public class MainGameCode : MonoBehaviour {
 	
 	
 	public static void ShootPuck() {
+		Engine tempEngine=engines[selectedEngine];
+		
+		int tempMaxPower=tempEngine.getMaxPower();
+		
 		EndAim();
-		puck.rigidbody.AddRelativeForce(new Vector3(0,currentPower*powerMultiplier,currentPower*powerMultiplier));
-		puck.rigidbody.AddTorque(new Vector3(currentPower*powerMultiplier*10,0,0));
+		puck.transform.position+=new Vector3(0,tempEngine.getElevation(),0);
+		puck.rigidbody.AddRelativeForce(new Vector3(0,currentPower/100*tempMaxPower*powerMultiplier,currentPower/100*tempMaxPower*powerMultiplier));
+		if (tempEngine.getType()!=ENGINE.BALLISTA)
+			puck.rigidbody.AddTorque(new Vector3(currentPower*powerMultiplier*10,0,0));
 		
 		currentPower=0;
 	}	

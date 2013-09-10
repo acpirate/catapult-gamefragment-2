@@ -223,6 +223,9 @@ Obj/
 UnityGenerated/
 Library/
 Assets/Standard\ Assets/
+Assets/AssetStoreAssets/
+Assets/WebPlayerTemplates/
+Assets/SimpleParticlePack/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
