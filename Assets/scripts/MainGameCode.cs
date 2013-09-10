@@ -56,6 +56,9 @@ public class MainGameCode : MonoBehaviour {
 	void Update () {
 		//look at the puck while its flying
 		if (puck.rigidbody.velocity.magnitude>0) mainCamera.transform.LookAt(puck.transform.position);
+		//turn off main camera if the puck is moving
+		if (puck.GetComponent<PuckCode>().puckMoving) {mainCamera.enabled=false; } 
+		if (!puck.GetComponent<PuckCode>().puckMoving && gamestate!=GAMESTATE.AIM) mainCamera.enabled=true;
 		//reset the puck if it falls off
 		if (puck.transform.position.y<-100) ResetPuck();
 	}

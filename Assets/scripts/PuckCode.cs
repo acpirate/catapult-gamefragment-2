@@ -7,8 +7,8 @@ public class PuckCode : MonoBehaviour {
 	
 	float RotationSpeed = 100;
 	
-	bool puckMoving=false;
-	
+	public bool puckMoving=false;
+	public GameObject moveCamera;
 	
 	// Use this for initialization
 	
@@ -21,10 +21,19 @@ public class PuckCode : MonoBehaviour {
 		DIRECTION direction=DIRECTION.NONE;
 		//Debug.Log(rigidbody.velocity.magnitude);
 		
+		
 		if (rigidbody.velocity.magnitude>1) puckMoving=true;
+		if (puckMoving) {
+			moveCamera.GetComponent<Camera>().enabled=true;
+			moveCamera.transform.position=transform.position + rigidbody.velocity.normalized*-100;
+			if (moveCamera.transform.position.y<20) moveCamera.transform.position=new Vector3(moveCamera.transform.position.x, 20, moveCamera.transform.position.z);
+			moveCamera.transform.LookAt(transform.position);
+		}	
+		
 		if (puckMoving && rigidbody.velocity.magnitude<1) {
 			puckMoving=false;
 			transform.rotation=Quaternion.Euler(0,0,0);
+			moveCamera.GetComponent<Camera>().enabled=false;
 		}	
 		
 		if (Input.GetKey(KeyCode.LeftArrow)) direction=DIRECTION.LEFT;
