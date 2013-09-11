@@ -39,6 +39,10 @@ public class MainGameCode : MonoBehaviour {
 	public static float powerMultiplier=100f;
 	public static float puckResetLocation=-245;
 	
+	public static float gameTime;
+	public static float finalTime=0;
+	public static float bestTime=0;
+	
 	public static GAMESTATE gamestate=GAMESTATE.TITLE;
 
 	// Use this for initialization
@@ -62,17 +66,26 @@ public class MainGameCode : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//look at the puck while its flying
-		if (puck.rigidbody.velocity.magnitude>0) mainCamera.transform.LookAt(puck.transform.position);
 		//turn off main camera if the puck is moving
 		if (puck.GetComponent<PuckCode>().puckMoving) {mainCamera.enabled=false; } 
 		if (!puck.GetComponent<PuckCode>().puckMoving && gamestate!=GAMESTATE.AIM) { 
 			mainCamera.enabled=true;
-			mainCamera.transform.position=puck.GetComponent<PuckCode>().moveCamera.transform.position;
+			//mainCamera.transform.position=puck.GetComponent<PuckCode>().moveCamera.transform.position;
+			//mainCamera.transform.position=new Vector3(mainCamera.transform.position.x, Mathf.Abs(mainCamera.transform.position.y),mainCamera.transform.position.z);
 		}		
 		//reset the puck if it falls off
 		if (puck.transform.position.y<-100) ResetPuck();
+		if (gamestate!=GAMESTATE.GAMEOVER && gamestate!=GAMESTATE.SETTINGS && gamestate!=GAMESTATE.TITLE) gameTime+=Time.deltaTime;
+		if (gamestate==GAMESTATE.TITLE) { ResetTimers(); }
+		
 	}
+
+
+	public static void ResetTimers() {
+		finalTime=0;
+		gameTime=0;
+	}	
+	
 	//static methods
 	public static void SetEngine(ENGINE inEngine) {
 		selectedEngine=inEngine;
@@ -80,8 +93,8 @@ public class MainGameCode : MonoBehaviour {
 	
 	static void InitializeEngines() {
 		engines[ENGINE.TREBUCHET]=new Engine(ENGINE.TREBUCHET,100,new List<int>() {40});
-		engines[ENGINE.BALLISTA]=new Engine(ENGINE.BALLISTA,30,new List<int>() {1,15,30});
-		engines[ENGINE.CATAPULT]=new Engine(ENGINE.CATAPULT,60,new List<int>() {45,60,75});
+		engines[ENGINE.BALLISTA]=new Engine(ENGINE.BALLISTA,50,new List<int>() {1,15,30});
+		engines[ENGINE.CATAPULT]=new Engine(ENGINE.CATAPULT,75,new List<int>() {45,60,75});
 	}	
 	
 	static void BuildWall() {
@@ -138,6 +151,8 @@ public class MainGameCode : MonoBehaviour {
 	}
 	
 	public static void GameOver() {
+		finalTime=gameTime;
+		if (bestTime>finalTime || bestTime==0) bestTime=finalTime;		
 		gamestate=GAMESTATE.GAMEOVER;	
 	}	
 	
@@ -165,7 +180,7 @@ public class MainGameCode : MonoBehaviour {
 	
 	public static void ResetKing() {
 		king.rigidbody.velocity=new Vector3(0,0,0);
-		king.transform.position=new Vector3(-150,27f,1000);
+		king.transform.position=new Vector3(-150,24.6f,1000);
 		king.transform.eulerAngles=new Vector3(0,0,0);
 		king.rigidbody.velocity=new Vector3(0,0,0);
 		king.GetComponent<KingCode>().Stabilize();
@@ -175,8 +190,20 @@ public class MainGameCode : MonoBehaviour {
 		puck.transform.position=new Vector3(0,1.5f,puckResetLocation);
 		puck.transform.rotation=Quaternion.Euler(0,0,0);
 		puck.rigidbody.velocity=new Vector3(0,0,0);
-		//mainCamera.transform.position=mainCameraStart;
-		//mainCamera.transform.LookAt(puck.transform.position);
+		MainCameraSetBehindPuck();
+	}	
+	
+	public static void EndZoneResetPuck() {
+		puck.transform.position=new Vector3(-200,1.5f,600);
+		puck.transform.rotation=Quaternion.Euler(0,0,0);
+		puck.rigidbody.velocity=new Vector3(0,0,0);
+		MainCameraSetBehindPuck();
+	
+	}	
+	
+	public static void MainCameraSetBehindPuck() {
+		mainCamera.transform.position=new Vector3(puck.transform.position.x, 50,puck.transform.position.z-100);
+		mainCamera.transform.LookAt(puck.transform.position+new Vector3(0,50,0));			
 	}	
 	
 	public static void PowerCharge() {

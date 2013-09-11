@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class BattlefieldCode : MonoBehaviour {
-
+	
 	// Use this for initialization
 	void Start () {
 	

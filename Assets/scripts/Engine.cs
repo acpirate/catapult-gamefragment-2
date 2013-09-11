@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Engine {
 	
-	readonly int trebuchetElevation=10;
+	readonly int trebuchetElevation=30;
 	
 	ENGINE type;
 	int maxPower;

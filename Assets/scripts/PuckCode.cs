@@ -8,6 +8,9 @@ public class PuckCode : MonoBehaviour {
 	float RotationSpeed = 100;
 	
 	public bool puckMoving=false;
+	
+	bool cameraResetFlag=false;
+	
 	public GameObject moveCamera;
 	
 	// Use this for initialization
@@ -24,10 +27,16 @@ public class PuckCode : MonoBehaviour {
 		
 		if (rigidbody.velocity.magnitude>1) puckMoving=true;
 		if (puckMoving) {
+			cameraResetFlag=true;
 			moveCamera.GetComponent<Camera>().enabled=true;
 			moveCamera.transform.position=transform.position + rigidbody.velocity.normalized*-100;
 			if (moveCamera.transform.position.y<20) moveCamera.transform.position=new Vector3(moveCamera.transform.position.x, 20, moveCamera.transform.position.z);
 			moveCamera.transform.LookAt(transform.position);
+		}	
+		
+		if (cameraResetFlag && !puckMoving) {
+			cameraResetFlag=false;
+			MainGameCode.MainCameraSetBehindPuck();
 		}	
 		
 		if (puckMoving && rigidbody.velocity.magnitude<1) {

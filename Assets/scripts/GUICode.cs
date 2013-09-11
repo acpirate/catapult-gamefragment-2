@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class GUICode : MonoBehaviour {
 	
@@ -8,6 +9,7 @@ public class GUICode : MonoBehaviour {
 	public GUIStyle instructionStyle;
 	public GUIStyle powerMeterTextStyle;
 	public GUIStyle powerMeterInteriorStyle;
+	public GUIStyle timerStyle;
 	
 	//buttons
 	int buttonSize=60;
@@ -78,24 +80,64 @@ public class GUICode : MonoBehaviour {
 		switch (MainGameCode.gamestate) {
 			case GAMESTATE.TITLE:	
 				DrawTitle();
+				DrawBestTime();
 			break;
 			case GAMESTATE.PLAY:
 				PlayUIButtons();
 				PlayInstructions();
+				DrawTime();
 			break;
 			case GAMESTATE.SETTINGS:
 				DrawSettingsWindow();
 			break;
 			case GAMESTATE.GAMEOVER:
+				DrawFinalTime();
 				DrawGameOver();
 			break;
 			case GAMESTATE.AIM:
+				DrawTime();
 				AimInstructions();
 				DisplayTargetIndicator();
 				DrawPowerMeter();
 				DrawEngineSelect();
 			break;			
 		}	
+	}	
+	
+	void DrawBestTime() {
+		if (MainGameCode.bestTime>0) {
+			System.TimeSpan t = System.TimeSpan.FromSeconds(MainGameCode.bestTime);
+ 
+			string timerFormatted = "Best Time: "+string.Format("{0:D2}m:{1:D2}s",t.Minutes, t.Seconds);
+		
+			Rect timerPosition=new Rect(Screen.width*.8f, 10,1000,1000);
+		
+			ShadowAndOutline.DrawOutline(timerPosition,timerFormatted,timerStyle,Color.black,Color.white,2);	
+		}	
+	}	
+	
+	void DrawFinalTime() {
+		if (MainGameCode.finalTime>0) {
+			System.TimeSpan t = System.TimeSpan.FromSeconds(MainGameCode.finalTime);
+ 
+			string timerFormatted = "Final Time: "+string.Format("{0:D2}m:{1:D2}s",t.Minutes, t.Seconds);
+		
+			Rect timerPosition=new Rect(Screen.width*.8f, 10,1000,1000);
+		
+			ShadowAndOutline.DrawOutline(timerPosition,timerFormatted,timerStyle,Color.black,Color.white,2);	
+		}			
+	}	
+	
+	void DrawTime() {
+		
+		System.TimeSpan t = System.TimeSpan.FromSeconds(MainGameCode.gameTime);
+ 
+		string timerFormatted = "Time: "+string.Format("{0:D2}m:{1:D2}s",t.Minutes, t.Seconds);
+		
+		Rect timerPosition=new Rect(Screen.width*.8f, 10,1000,1000);
+		
+		ShadowAndOutline.DrawOutline(timerPosition,timerFormatted,timerStyle,Color.black,Color.white,2);
+		
 	}	
 	
 	
@@ -181,7 +223,7 @@ public class GUICode : MonoBehaviour {
 	
 	void PlayInstructions() {
 		Rect instructionPosition=new Rect(0,Screen.height*.9f,Screen.width,Screen.height*.10f);
-		ShadowAndOutline.DrawOutline(instructionPosition,"left ctrl+mouse to look, enter to aim puck\n wasd moves view",instructionStyle,Color.black,Color.white,2f);
+		ShadowAndOutline.DrawOutline(instructionPosition,"enter to aim puck\n wasd moves view, q and e rotate",instructionStyle,Color.black,Color.white,2f);
 	}	
 	
 	void AimInstructions() {
