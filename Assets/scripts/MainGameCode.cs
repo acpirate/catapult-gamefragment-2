@@ -27,7 +27,8 @@ public class MainGameCode : MonoBehaviour {
 	static float wallXStart=-300;
 	static float wallZStart=950;
 	
-	static ENGINE selectedEngine = ENGINE.BALLISTA;
+	public static ENGINE selectedEngine = ENGINE.BALLISTA;
+	public static int angleSelectNumber=0;
 	
 	
 	static float powerChargeRate=50;
@@ -36,7 +37,7 @@ public class MainGameCode : MonoBehaviour {
 	public static float maxTrebuchetPower=100;
 	public static float maxPower=100;
 	public static float currentPower=0;
-	public static float powerMultiplier=100f;
+	public static float powerMultiplier=150f;
 	public static float puckResetLocation=-245;
 	
 	public static float gameTime;
@@ -118,12 +119,43 @@ public class MainGameCode : MonoBehaviour {
 		
 		EndAim();
 		puck.transform.position+=new Vector3(0,tempEngine.getElevation(),0);
-		puck.rigidbody.AddRelativeForce(new Vector3(0,currentPower/100*tempMaxPower*powerMultiplier,currentPower/100*tempMaxPower*powerMultiplier));
+		
+		int tempAngle=engines[selectedEngine].getAngles()[angleSelectNumber];
+		//puck normalized forward is the starting point
+		Vector3 shootVector=puck.transform.forward;
+		//rotated vector to shooting angle
+		
+		
+		
+		GameObject tempRotatingObject=new GameObject("tempGameObject");
+		
+		tempRotatingObject.transform.rotation=puck.transform.rotation;
+		
+		Debug.Log("maingamecode: shootvector " + tempRotatingObject.transform.forward);
+		
+		tempRotatingObject.transform.eulerAngles+=new Vector3(-1*tempAngle,0,0);
+		
+		shootVector=tempRotatingObject.transform.forward;
+		
+		Destroy(tempRotatingObject);
+		
+		//Debug.Log("maingamecode: tempAngle " + tempAngle);
+		
+		//shootVector=Quaternion.AngleAxis(-1*tempAngle,puck.transform.right)*shootVector;
+		
+		Debug.Log("maingamecode: rotated shootvector " + shootVector);
+				
+		//add power multipliers
+		shootVector*=currentPower/100*tempMaxPower*powerMultiplier;
+		//puck.transform.eulerAngles+=new Vector3(0,tempAngle*-1,0);
+		
+		puck.rigidbody.AddForce(shootVector);
 		if (tempEngine.getType()!=ENGINE.BALLISTA)
-			puck.rigidbody.AddTorque(new Vector3(currentPower*powerMultiplier*10,0,0));
+			puck.rigidbody.AddRelativeTorque(new Vector3(currentPower/100*maxPower*powerMultiplier*10,0,0));
 		
 		currentPower=0;
 	}	
+		
 	
 	public static void QuitGame() {
 		ClearBricks();

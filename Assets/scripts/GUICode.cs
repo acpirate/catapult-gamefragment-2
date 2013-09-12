@@ -10,6 +10,7 @@ public class GUICode : MonoBehaviour {
 	public GUIStyle powerMeterTextStyle;
 	public GUIStyle powerMeterInteriorStyle;
 	public GUIStyle timerStyle;
+	public GUIStyle angleLableStyle;
 	
 	//buttons
 	int buttonSize=60;
@@ -100,6 +101,7 @@ public class GUICode : MonoBehaviour {
 				DisplayTargetIndicator();
 				DrawPowerMeter();
 				DrawEngineSelect();
+				DrawAngleSelect();
 			break;			
 		}	
 	}	
@@ -135,8 +137,28 @@ public class GUICode : MonoBehaviour {
 		string timerFormatted = "Time: "+string.Format("{0:D2}m:{1:D2}s",t.Minutes, t.Seconds);
 		
 		Rect timerPosition=new Rect(Screen.width*.8f, 10,1000,1000);
-		
 		ShadowAndOutline.DrawOutline(timerPosition,timerFormatted,timerStyle,Color.black,Color.white,2);
+		
+	}	
+	
+	void DrawAngleSelect() {
+		
+		Rect angleLablePosition=new Rect(15,118,50,100);
+		ShadowAndOutline.DrawOutline(angleLablePosition,"Angle",instructionStyle,Color.black,Color.white,2);
+		
+		Rect angleSelectPosition=new Rect(10,140,100,100);	
+		
+		
+		
+		GUIContent[] selectionContent=new GUIContent[MainGameCode.engines[MainGameCode.selectedEngine].getAngles().Count];
+		
+		for (int counter=0;counter<MainGameCode.engines[MainGameCode.selectedEngine].getAngles().Count;counter++) {
+			selectionContent[counter]=new GUIContent(MainGameCode.engines[MainGameCode.selectedEngine].getAngles()[counter].ToString());
+		}	
+		if (MainGameCode.selectedEngine==ENGINE.TREBUCHET) MainGameCode.angleSelectNumber=0;
+		
+		MainGameCode.angleSelectNumber=GUI.SelectionGrid(angleSelectPosition,MainGameCode.angleSelectNumber,selectionContent,1);
+		
 		
 	}	
 	
@@ -227,8 +249,13 @@ public class GUICode : MonoBehaviour {
 	}	
 	
 	void AimInstructions() {
-		Rect instructionPosition=new Rect(0,Screen.height*.8f,Screen.width,Screen.height*.10f);
-		ShadowAndOutline.DrawOutline(instructionPosition,"arrow keys to turn puck and tilt view, esc to cancel\nhold space to power up, release to fire",instructionStyle,Color.black,Color.white,2f);
+		string aimInstructionString="";
+		aimInstructionString+="ballista fires flat shots at low angles, ";
+		aimInstructionString+="catapult fires spinning shots at high angles,\n";
+		aimInstructionString+="trebuchet first high power spinning shots at a fixed angle\n and starts in an elevated position\n";
+		aimInstructionString+="arrow keys to turn puck and tilt view, esc to cancel\nhold space to power up, release to fire";
+		Rect instructionPosition=new Rect(0,Screen.height*.75f,Screen.width,Screen.height*.10f);
+		ShadowAndOutline.DrawOutline(instructionPosition,aimInstructionString,instructionStyle,Color.black,Color.white,2f);
 	}	
 	
 	void DrawSettingsButton() {	
@@ -246,11 +273,6 @@ public class GUICode : MonoBehaviour {
 	}	
 	
 	void DrawSettingsWindow() {
-		/*GUI.Box(new Rect(Screen.width*.5f-Screen.width*.5f*.01f*settingsWindowWidth,
-						 Screen.height*.5f-Screen.height*.5f*.01f*settingsWindowHeight,
-						 Screen.width*.01f*settingsWindowWidth,
-						 Screen.height*.01f*settingsWindowHeight),
-				"");*/
 
 		GUILayout.BeginArea(new Rect(Screen.width*.5f-Screen.width*.5f*.01f*settingsWindowWidth,
 						 Screen.height*.5f-Screen.height*.5f*.01f*settingsWindowHeight,
